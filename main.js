@@ -88,15 +88,42 @@ function addEventListeners(renderer, camera, avatar)
 function addControls(avatar)
 {
     // keyboard controls
+    const keyState = {
+        w: false,
+        s: false,
+        a: false,
+        d: false
+    }
+
     document.addEventListener('keydown', (event) => {
-        switch(event.key)
+        if (keyState.hasOwnProperty(event.key))
         {
-            case 'w': avatar.position.z += 0.05; break;
-            case 's': avatar.position.z -= 0.05; break;
-            case 'a': avatar.position.x += 0.05; break;
-            case 'd': avatar.position.x -= 0.05; break;
+            keyState[event.key] = true;
         }
     })
+
+    document.addEventListener('keyup', (event) => {
+        if (keyState.hasOwnProperty(event.key))
+        {
+            keyState[event.key] = false;
+        }
+    })
+
+    function updatePos()
+    {
+        if (keyState.w) avatar.position.z += 0.05;
+        if (keyState.s) avatar.position.z -= 0.05;
+        if (keyState.a) avatar.position.x += 0.05;
+        if (keyState.d) avatar.position.x -= 0.05;
+    }
+
+    function gameLoop()
+    {
+        updatePos();
+        requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
 }
 
 function handleResize(renderer, camera)
