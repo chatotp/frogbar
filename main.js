@@ -67,7 +67,7 @@ function createAvatar(scene)
         const textGeometry = new TextGeometry('test', {
             font: font,
             size: 0.3,
-            height: 0
+            height: 0.05
         })
 
         const textMaterial = new THREE.MeshBasicMaterial({ color: 0x00fff0 });
