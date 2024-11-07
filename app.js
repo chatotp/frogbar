@@ -1,10 +1,15 @@
 import { createScene } from './src/js/scene';
 import { createAvatar } from './src/js/avatar';
 import { addKeyboardControls } from './src/js/control';
+import { listenForUpdates, sendPosUpdate } from './src/js/network';
+import { playerAvatars, targetPos } from './src/js/state';
 
 import * as utils from './src/js/utils';
 import * as THREE from 'three';
 import WebGL from 'three/addons/capabilities/WebGL.js';
+
+// TODO: Change this in prod!
+const socket = io("http://localhost:3000");
 
 if (WebGL.isWebGL2Available()) 
 {
@@ -23,6 +28,9 @@ function initSpace()
 
     const ctrAnimate = addKeyboardControls(avatar);
     const cameraOffSet = new THREE.Vector3(0, 5, -10);
+    let lastPos = new THREE.Vector3();
+
+    listenForUpdates(socket, scene, avatar);
 
     function animateLoop()
     {
@@ -32,6 +40,23 @@ function initSpace()
 
         coordsDisplay.textContent = `X: ${avatar.position.x.toFixed(2)}, Y: ${avatar.position.y.toFixed(2)}, Z: ${avatar.position.z.toFixed(2)}`;
 
+        if (!avatar.position.equals(lastPos))
+        {
+            sendPosUpdate(socket, avatar.position);
+            lastPos.copy(avatar.position);
+        }
+
+        Object.keys(playerAvatars).forEach(playerId => {
+            if (targetPos[playerId])
+            {
+                const currentAvatar = playerAvatars[playerId];
+                const newPos = targetPos[playerId];
+
+                // interpolate curr pos to target pos
+                currentAvatar.position.lerp(newPos, 0.1);
+            }
+        })
+
         renderer.render(scene, camera);
     }
 
@@ -40,5 +65,5 @@ function initSpace()
 
     // TODO: Remove this after adding skybox
     const gridHelper = new utils.createInfiniteGrid(100);
-    scene.add(gridHelper);
+    //scene.add(gridHelper);
 }

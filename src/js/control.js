@@ -1,4 +1,5 @@
-export function addKeyboardControls(avatar) {
+export function addKeyboardControls(avatar) 
+{
     const keyState = {
         w: false,
         s: false,
