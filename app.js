@@ -7,6 +7,7 @@ import { playerAvatars, targetPos } from './src/js/state';
 import * as utils from './src/js/utils';
 import * as THREE from 'three';
 import WebGL from 'three/addons/capabilities/WebGL.js';
+import { handleVoiceChatUpdates } from './src/js/voiceChat';
 
 // TODO: Change this in prod!
 const socket = io("http://localhost:3000");
@@ -54,6 +55,8 @@ function initSpace()
 
                 // interpolate curr pos to target pos
                 currentAvatar.position.lerp(newPos, 0.1);
+
+                handleVoiceChatUpdates(avatar.position, playerId);
             }
         })
 

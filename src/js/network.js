@@ -21,17 +21,14 @@ export function listenForUpdates(socket, scene, avatar)
                 
                 // update player if exists
                 // else create new one
-                if (playerAvatars[playerId])
-                {
-                    updateTargetPos(playerId, pos);
-                }
-                else
+                if (!playerAvatars[playerId])
                 {
                     const newAvatar = createAvatar(scene);
                     newAvatar.position.set(pos.x, pos.y, pos.z);
                     playerAvatars[playerId] = newAvatar;
-                    updateTargetPos(playerId, pos);
                 }
+
+                updateTargetPos(playerId, pos);
             }
         })
     })
