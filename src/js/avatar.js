@@ -20,13 +20,13 @@ function createAvatarText(avatar)
     fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
         const textGeometry = new TextGeometry('test', {
             font: font,
-            size: 0.3,
+            size: 0.25,
             depth: 0.05
         })
 
         const textMaterial = new THREE.MeshBasicMaterial({ color: 0x00fff0 });
         const usernameTextMesh = new THREE.Mesh(textGeometry, textMaterial);
-        usernameTextMesh.position.set(-0.4, -0.5, 5); // above avatar
+        usernameTextMesh.position.set(-0.3, 1.4, 0); // above avatar
         avatar.add(usernameTextMesh);
     });
 }
