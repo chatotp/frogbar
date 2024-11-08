@@ -10,7 +10,7 @@ import WebGL from 'three/addons/capabilities/WebGL.js';
 import { handleVoiceChatUpdates } from './src/js/voiceChat';
 
 // TODO: Change this in prod!
-const socket = io("http://localhost:3000");
+const socket = io("https://localhost:3000");
 
 if (WebGL.isWebGL2Available()) 
 {
@@ -68,5 +68,5 @@ function initSpace()
 
     // TODO: Remove this after adding skybox
     const gridHelper = new utils.createInfiniteGrid(100);
-    //scene.add(gridHelper);
+    scene.add(gridHelper);
 }
