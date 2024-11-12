@@ -7,6 +7,7 @@ import { initChat } from './src/js/textChat';
 
 import * as utils from './src/js/utils';
 import * as THREE from 'three';
+import { PointerLockControls } from 'three/examples/jsm/Addons.js';
 import WebGL from 'three/addons/capabilities/WebGL.js';
 
 // TODO: Change this in prod!
@@ -27,18 +28,24 @@ function initSpace()
     const { scene, camera, renderer } = createScene();
     const coordsDisplay = utils.displayCoords();
     const avatar = createAvatar(scene);
+    avatar.add(camera);
+    camera.position.set(0, 4, -5);
 
-    const ctrAnimate = addKeyboardControls(avatar);
-    const cameraOffSet = new THREE.Vector3(0, 5, -10);
-    let lastPos = new THREE.Vector3();
+    const controls = new PointerLockControls(camera, renderer.domElement);
+    document.addEventListener('click', () => {
+        controls.lock();  // Lock the mouse pointer
+    });
+
+    const keyControls = addKeyboardControls(avatar);
 
     listenForUpdates(socket, scene, avatar);
 
+    let lastPos = new THREE.Vector3();
+
     function animateLoop()
     {
-        ctrAnimate();
-        camera.position.copy(avatar.position).add(cameraOffSet);
-        camera.lookAt(avatar.position);
+        controls.update(0.05);
+        keyControls();
 
         coordsDisplay.textContent = `X: ${avatar.position.x.toFixed(2)}, Y: ${avatar.position.y.toFixed(2)}, Z: ${avatar.position.z.toFixed(2)}`;
 
@@ -66,6 +73,9 @@ function initSpace()
     utils.handleResize(renderer, camera);
 
     // TODO: Remove this after adding skybox
-    const gridHelper = new utils.createInfiniteGrid(100);
-    scene.add(gridHelper);
+    // const gridHelper = new utils.createInfiniteGrid(100);
+    //scene.add(gridHelper);
+
+    const colorPoints = new utils.createColorPoints(2000, 500); // 2000 points spread over 500 units in space
+    scene.add(colorPoints);    
 }
