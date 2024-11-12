@@ -3,6 +3,7 @@ import { createAvatar } from './src/js/avatar';
 import { addKeyboardControls } from './src/js/control';
 import { listenForUpdates, sendPosUpdate } from './src/js/network';
 import { playerAvatars, targetPos } from './src/js/state';
+import { initChat } from './src/js/textChat';
 
 import * as utils from './src/js/utils';
 import * as THREE from 'three';
@@ -14,6 +15,7 @@ const socket = io("https://localhost:3000");
 if (WebGL.isWebGL2Available()) 
 {
     initSpace();
+    initChat(socket);
 } 
 else
 {

@@ -16,11 +16,46 @@
             right: 1em;
             color: white;
         }
+
+        #chat-box {
+            position: absolute;
+            bottom: 0.5em;
+            left: 0.5em;
+            width: 20em;
+            padding: 0.5em;
+            background-color: rgba(0, 30, 0, 0.8);
+            color: white;
+            border-radius: 5px;
+        }
+
+        #chat-msgs {
+            max-height: 20em;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .chat-message {
+            margin: 0.5em 0em;
+        }
+
+        #chat-input {
+            width: 95%;
+            padding: 5px;
+            border-radius: 3px;
+            border: none;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            line-height: 100%;
+        }
     </style>
 
     <script src="https://cdn.socket.io/4.8.0/socket.io.min.js" integrity="sha384-OoIbkvzsFFQAG88r+IqMAjyOtYDPGO0cqK5HF5Uosdy/zUEGySeAzytENMDynREd" crossorigin="anonymous"></script>
 </head>
 <body>
     <script type="module" src="./app.js"></script>
+    <div id="chat-box">
+        <div id="chat-msgs"></div>
+        <input type="text" id="chat-input" placeholder="Type your message here!" />
+    </div>
 </body>
 </html>
