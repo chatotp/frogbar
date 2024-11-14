@@ -72,10 +72,6 @@ function initSpace()
     renderer.setAnimationLoop(animateLoop);
     utils.handleResize(renderer, camera);
 
-    // TODO: Remove this after adding skybox
-    // const gridHelper = new utils.createInfiniteGrid(100);
-    //scene.add(gridHelper);
-
     const colorPoints = new utils.createColorPoints(2000, 500); // 2000 points spread over 500 units in space
     scene.add(colorPoints);    
 }
