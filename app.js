@@ -1,6 +1,6 @@
 import { createScene } from './src/js/scene';
-import { createAvatar } from './src/js/avatar';
-import { addKeyboardControls } from './src/js/control';
+import { createAvatar, createAvatarText } from './src/js/avatar';
+import { addKeyboardControls, addMouseControls } from './src/js/control';
 import { listenForUpdates, sendPosUpdate } from './src/js/network';
 import { playerAvatars, targetPos } from './src/js/state';
 import { initChat } from './src/js/textChat';
@@ -27,7 +27,7 @@ function initSpace()
 {
     const { scene, camera, renderer } = createScene();
     const coordsDisplay = utils.displayCoords();
-    const avatar = createAvatar(scene);
+    const avatar = createAvatar();
     avatar.add(camera);
     camera.position.set(0, 4, -5);
 
@@ -37,14 +37,22 @@ function initSpace()
     });
 
     const keyControls = addKeyboardControls(avatar);
+    const mouseControls = addMouseControls(camera);
 
     listenForUpdates(socket, scene, avatar);
+
+    // Prompt for the username
+    const username = prompt("Enter your username:", "Anonymous");
+    const userHexColor = avatar.material.color.getHex();
+    const userColor = `#${userHexColor.toString(16).padStart(6, '0')}`;
+    socket.emit('setUserData', { username, color: userColor} );
+    createAvatarText(scene, avatar, username, userColor);
 
     let lastPos = new THREE.Vector3();
 
     function animateLoop()
     {
-        controls.update(0.05);
+        controls.update();
         keyControls();
 
         coordsDisplay.textContent = `X: ${avatar.position.x.toFixed(2)}, Y: ${avatar.position.y.toFixed(2)}, Z: ${avatar.position.z.toFixed(2)}`;
