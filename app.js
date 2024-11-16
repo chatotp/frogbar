@@ -7,7 +7,6 @@ import { initChat } from './src/js/textChat';
 
 import * as utils from './src/js/utils';
 import * as THREE from 'three';
-import { PointerLockControls } from 'three/examples/jsm/Addons.js';
 import WebGL from 'three/addons/capabilities/WebGL.js';
 
 // TODO: Change this in prod!
@@ -31,13 +30,8 @@ function initSpace()
     avatar.add(camera);
     camera.position.set(0, 4, -5);
 
-    const controls = new PointerLockControls(camera, renderer.domElement);
-    document.addEventListener('click', () => {
-        controls.lock();  // Lock the mouse pointer
-    });
-
     const keyControls = addKeyboardControls(avatar);
-    const mouseControls = addMouseControls(camera);
+    addMouseControls(camera);
 
     listenForUpdates(socket, scene, avatar);
 
@@ -46,13 +40,12 @@ function initSpace()
     const userHexColor = avatar.material.color.getHex();
     const userColor = `#${userHexColor.toString(16).padStart(6, '0')}`;
     socket.emit('setUserData', { username, color: userColor} );
-    createAvatarText(scene, avatar, username, userColor);
+    createAvatarText(scene, avatar, username, userColor, 1);
 
     let lastPos = new THREE.Vector3();
 
     function animateLoop()
     {
-        controls.update();
         keyControls();
 
         coordsDisplay.textContent = `X: ${avatar.position.x.toFixed(2)}, Y: ${avatar.position.y.toFixed(2)}, Z: ${avatar.position.z.toFixed(2)}`;

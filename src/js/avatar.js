@@ -19,7 +19,7 @@ export function createAvatar(colorText = Math.random() * 0xffffff)
     return avatar;
 }
 
-export function createAvatarText(scene, avatar, username, colorText)
+export function createAvatarText(scene, avatar, username, colorText, localPlayer = -1)
 {
     const fontLoader = new FontLoader();
     fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', (font) => {
@@ -29,9 +29,20 @@ export function createAvatarText(scene, avatar, username, colorText)
             depth: 0.05
         })
 
+        // calculate bounding box width, so we can center text
+        textGeometry.computeBoundingBox();
+        const textCenter = new THREE.Vector3();
+        textGeometry.boundingBox.getCenter(textCenter);
+
         const textMaterial = new THREE.MeshBasicMaterial({ color: colorText });
         const usernameTextMesh = new THREE.Mesh(textGeometry, textMaterial);
-        usernameTextMesh.position.set(-0.3, 1.4, 0); // above avatar
+        usernameTextMesh.position.set(localPlayer * textCenter.x, 1.4, 0); // above avatar
+
+        if (localPlayer === 1)
+        {
+            usernameTextMesh.rotateY(Math.PI);
+        }
+        
         avatar.add(usernameTextMesh);
         
         scene.add(avatar);
