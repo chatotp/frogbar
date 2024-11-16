@@ -4,14 +4,18 @@ import * as THREE from 'three';
 export const playerAvatars = {};
 export const targetPos = {};
 
-export function updateTargetPos(playerId, pos)
+export function updateTargetPos(playerId, pos, rot)
 {
     if (!targetPos[playerId])
     {
-        targetPos[playerId] = new THREE.Vector3();
+        targetPos[playerId] = {
+            position: new THREE.Vector3(),
+            rotation: new THREE.Euler()
+        };
     }
 
-    targetPos[playerId].set(pos.x, pos.y, pos.z);
+    targetPos[playerId].position.set(pos.x, pos.y, pos.z);
+    targetPos[playerId].rotation.set(rot._x, rot._y, rot._z);
 }
 
 export function removePlayer(playerId, scene)

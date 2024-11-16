@@ -8,14 +8,21 @@ export function handleResize(renderer, camera)
         camera.updateProjectionMatrix();
     })
 }
-
-export function displayCoords()
-{
+export function displayCoords() {
     const coordsDisplay = document.createElement('div');
     coordsDisplay.className = 'coords-display';
     document.body.appendChild(coordsDisplay);
-    return coordsDisplay;
+
+    return {
+        update: (position, rotation) => {
+            coordsDisplay.innerHTML = `
+                X: ${position.x.toFixed(2)}, Y: ${position.y.toFixed(2)}, Z: ${position.z.toFixed(2)}<br>
+                Rotation: ${THREE.MathUtils.radToDeg(rotation.y).toFixed(2)}°
+            `;
+        }
+    };
 }
+
 
 export function createColorPoints(numPoints = 1000, spread = 1000) {
     const geometry = new THREE.BufferGeometry();

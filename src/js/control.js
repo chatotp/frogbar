@@ -39,32 +39,47 @@ export function addKeyboardControls(avatar)
 
     function updatePos() {
         // Calculate forward/backward acceleration
-        if (keyState.w) {
+        if (keyState.w) 
+        {
             velocity.z = Math.min(velocity.z + acceleration, maxSpeed);
-        } else if (keyState.s) {
+        } 
+        else if (keyState.s) 
+        {
             velocity.z = Math.max(velocity.z - acceleration, -maxSpeed);
-        } else {
+        } 
+        else 
+        {
             // Deceleration when no keys are pressed
             velocity.z = velocity.z > 0 ? Math.max(velocity.z - deceleration, 0) : Math.min(velocity.z + deceleration, 0);
         }
 
         // Calculate left/right turning speed
-        if (keyState.a) {
-            rotationSpeed = Math.min(rotationSpeed + turnAcceleration, maxRotationSpeed);
-        } else if (keyState.d) {
-            rotationSpeed = Math.max(rotationSpeed - turnAcceleration, -maxRotationSpeed);
-        } else {
+        if (keyState.a) 
+        {
+            rotationSpeed = Math.min(rotationSpeed + turnAcceleration, maxRotationSpeed); // A key = clockwise
+        } 
+        else if (keyState.d) 
+        {
+            rotationSpeed = Math.max(rotationSpeed - turnAcceleration, -maxRotationSpeed); // D key = counterclockwise
+        } 
+        else 
+        {
             // Decelerate turning if no keys pressed
             rotationSpeed = rotationSpeed > 0 ? Math.max(rotationSpeed - turnAcceleration, 0) : Math.min(rotationSpeed + turnAcceleration, 0);
         }
 
-        if (keyState.e) {
+        if (keyState.e) 
+        {
             avatar.position.y += 0.1;
-        } else if (keyState.q) {
+        }
+        else if (keyState.q)
+        {
             avatar.position.y -= 0.1;
         }
 
         avatar.rotation.y += rotationSpeed;
+        avatar.rotation.y = THREE.MathUtils.euclideanModulo(avatar.rotation.y, Math.PI * 2); // Normalize between 0 and 2π
+        
         const direction = new THREE.Vector3(0, 0, 1).applyQuaternion(avatar.quaternion);
         avatar.position.addScaledVector(direction, velocity.z);
 
