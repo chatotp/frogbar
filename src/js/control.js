@@ -1,20 +1,5 @@
 import * as THREE from 'three';
 
-let zoomLevel = 1;
-
-export function addMouseControls(camera)
-{
-    document.addEventListener('wheel', (event) => {
-        if (event.deltaY > 0) {
-            zoomLevel = Math.max(0.1, zoomLevel - 0.05);  // Zoom out
-        } else {
-            zoomLevel = Math.min(3, zoomLevel + 0.05);  // Zoom in
-        }
-        camera.zoom = zoomLevel;
-        camera.updateProjectionMatrix();
-    });
-}
-
 export function addKeyboardControls(avatar) 
 {
     const keyState = {

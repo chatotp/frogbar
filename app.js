@@ -1,6 +1,6 @@
 import { createScene } from './src/js/scene';
 import { createAvatar, createAvatarText } from './src/js/avatar';
-import { addKeyboardControls, addMouseControls } from './src/js/control';
+import { addKeyboardControls } from './src/js/control';
 import { listenForUpdates, sendPosUpdate } from './src/js/network';
 import { playerAvatars, targetPos } from './src/js/state';
 import { initChat } from './src/js/textChat';
@@ -31,7 +31,6 @@ function initSpace()
     camera.position.set(0, 4, -5);
 
     const keyControls = addKeyboardControls(avatar);
-    addMouseControls(camera);
 
     listenForUpdates(socket, scene, avatar);
 
