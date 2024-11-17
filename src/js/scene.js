@@ -17,9 +17,10 @@ export function createScene()
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
 
-    scene.add(createSun());
+    const sun = createSun()
+    scene.add(sun);
 
-    return { scene, camera, renderer };
+    return { scene, camera, renderer, sun };
 }
 
 function createSun()

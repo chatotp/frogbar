@@ -1,7 +1,7 @@
 import { createScene } from './src/js/scene';
 import { createAvatar, createAvatarText } from './src/js/avatar';
 import { addKeyboardControls } from './src/js/control';
-import { listenForUpdates, sendPosUpdate } from './src/js/network';
+import { listenForUpdates } from './src/js/network';
 import { playerAvatars, targetPos } from './src/js/state';
 import { initChat } from './src/js/textChat';
 
@@ -22,9 +22,12 @@ else
     document.body.appendChild(WebGL.getErrorMessage());
 }
 
+
+let isAnimating = true;
+
 function initSpace()
 {
-    const { scene, camera, renderer } = createScene();
+    const { scene, camera, renderer, sun } = createScene();
     const coordsDisplay = utils.displayCoords();
     const avatar = createAvatar();
     avatar.add(camera);
@@ -46,20 +49,18 @@ function initSpace()
 
     function animateLoop()
     {
+        if (!isAnimating) return;
+
         keyControls();
 
         coordsDisplay.update(avatar.position, avatar.rotation);
-
-        if (!avatar.position.equals(lastPos) || !avatar.rotation.equals(lastRot))
-        {
-            sendPosUpdate(socket, avatar.position, avatar.rotation);
-            lastPos.copy(avatar.position);
-            lastRot.copy(avatar.rotation);
-        }
+        utils.checkSunCollision(scene, avatar, sun.position, true);
+        utils.updateCurrentPlayerPos(lastPos, lastRot, avatar, socket);
 
         Object.keys(playerAvatars).forEach(playerId => {
             if (targetPos[playerId])
             {
+                utils.checkSunCollision(scene, playerAvatars[playerId], sun.position);
                 const currentAvatar = playerAvatars[playerId];
                 const newPos = targetPos[playerId].position;
                 const newRot = targetPos[playerId].rotation;
@@ -80,5 +81,15 @@ function initSpace()
     utils.handleResize(renderer, camera);
 
     const colorPoints = new utils.createColorPoints(2000, 500); // 2000 points spread over 500 units in space
-    scene.add(colorPoints);    
+    scene.add(colorPoints);
+}
+
+export function pauseAnimation()
+{
+    isAnimating = false;
+}
+
+export function resumeAnimation()
+{
+    isAnimating = true;
 }

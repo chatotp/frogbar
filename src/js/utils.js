@@ -1,4 +1,6 @@
 import * as THREE from 'three';
+import { sendPosUpdate } from './network';
+import { pauseAnimation, resumeAnimation } from '../../app';
 
 export function handleResize(renderer, camera)
 {
@@ -23,6 +25,58 @@ export function displayCoords() {
     };
 }
 
+export function checkSunCollision(scene, avatar, sunPosition, localPlayer = false)
+{
+    const distance = avatar.position.distanceTo(sunPosition);
+
+    if (distance < 50)
+    {
+        scene.remove(avatar);
+
+        if (localPlayer)
+        {
+            showBurnedScreen();
+            pauseAnimation();
+        }
+
+        setTimeout(() => {
+            if (localPlayer)
+            {
+                restartPlayer(avatar);
+            }
+
+            scene.add(avatar);
+            
+            if (localPlayer)
+            {
+                resumeAnimation();
+            }
+        }, 3000);
+    }
+}
+
+export function updateCurrentPlayerPos(lastPos, lastRot, avatar, socket)
+{
+    if (!avatar.position.equals(lastPos) || !avatar.rotation.equals(lastRot))
+    {
+        sendPosUpdate(socket, avatar.position, avatar.rotation);
+        lastPos.copy(avatar.position);
+        lastRot.copy(avatar.rotation);
+    }
+}
+
+function restartPlayer(avatar) {
+    avatar.position.set((new THREE.Vector3(Math.random() - 0.5) * 60, 0, (Math.random() - 0.5) * 60), 0.1);
+}
+
+function showBurnedScreen() {
+    const burnedScreen = document.getElementById('burned-screen');
+    burnedScreen.style.display = 'block';
+
+    setTimeout(() => {
+        burnedScreen.style.display = 'none';
+    }, 3000);
+}
 
 export function createColorPoints(numPoints = 1000, spread = 1000) {
     const geometry = new THREE.BufferGeometry();

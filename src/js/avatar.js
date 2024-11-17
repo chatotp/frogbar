@@ -5,7 +5,7 @@ import { TextGeometry } from 'three/examples/jsm/Addons.js';
 export function createAvatar(colorText = Math.random() * 0xffffff)
 {
     const geometry = new THREE.BoxGeometry(1, 2, 1);
-    const material = new THREE.MeshBasicMaterial({ color: colorText, roughness: 0.5, metalness: 0.2 });
+    const material = new THREE.MeshBasicMaterial({ color: colorText });
     const avatar = new THREE.Mesh(geometry, material);
 
     // Randomize the position for the current player avatar within a range of -30 to 30
