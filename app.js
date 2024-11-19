@@ -6,6 +6,7 @@ import { playerAvatars, targetPos } from './src/js/state';
 import { initChat } from './src/js/textChat';
 
 import * as utils from './src/js/utils';
+import * as playerUtils from './src/js/playerUtils'
 import * as THREE from 'three';
 import WebGL from 'three/addons/capabilities/WebGL.js';
 
@@ -44,6 +45,13 @@ function initSpace()
     socket.emit('setUserData', { username, color: userColor} );
     createAvatarText(scene, avatar, username, userColor, 1);
 
+    const currentPlayer = {
+        avatar: avatar,
+        hp: 100,
+        maxHP: 100
+    };
+    playerUtils.updatePlayerHealth(scene, currentPlayer, true);
+
     let lastPos = new THREE.Vector3();
     let lastRot = new THREE.Euler();
 
@@ -54,14 +62,22 @@ function initSpace()
         keyControls();
 
         coordsDisplay.update(avatar.position, avatar.rotation);
-        utils.checkSunCollision(scene, avatar, sun.position, true);
-        utils.updateCurrentPlayerPos(lastPos, lastRot, avatar, socket);
+        utils.checkSunCollision(scene, currentPlayer, sun.position, true);
+        playerUtils.updateCurrentPlayerPos(lastPos, lastRot, avatar, socket);
+        if (currentPlayer.hp !== 0)
+        {
+            playerUtils.updatePlayerHealth(scene, currentPlayer, 0.01, true);   
+        }
+        else
+        {
+            playerUtils.updatePlayerHealth(scene, currentPlayer, -100, true);
+        }
 
         Object.keys(playerAvatars).forEach(playerId => {
             if (targetPos[playerId])
             {
                 utils.checkSunCollision(scene, playerAvatars[playerId], sun.position);
-                const currentAvatar = playerAvatars[playerId];
+                const currentAvatar = playerAvatars[playerId].avatar;
                 const newPos = targetPos[playerId].position;
                 const newRot = targetPos[playerId].rotation;
 

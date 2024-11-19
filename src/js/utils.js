@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { sendPosUpdate } from './network';
 import { pauseAnimation, resumeAnimation } from '../../app';
 
 export function handleResize(renderer, camera)
@@ -25,13 +24,19 @@ export function displayCoords() {
     };
 }
 
-export function checkSunCollision(scene, avatar, sunPosition, localPlayer = false)
+export function checkSunCollision(scene, player, sunPosition, localPlayer = false)
 {
-    const distance = avatar.position.distanceTo(sunPosition);
+    const distance = player.avatar.position.distanceTo(sunPosition);
 
     if (distance < 50)
     {
-        scene.remove(avatar);
+        showDeathScreen(scene, player, localPlayer)
+    }
+}
+
+export function showDeathScreen(scene, player, localPlayer)
+{
+    scene.remove(player.avatar);
 
         if (localPlayer)
         {
@@ -42,34 +47,26 @@ export function checkSunCollision(scene, avatar, sunPosition, localPlayer = fals
         setTimeout(() => {
             if (localPlayer)
             {
-                restartPlayer(avatar);
+                restartPlayer(player);
             }
 
-            scene.add(avatar);
+            scene.add(player.avatar);
             
             if (localPlayer)
             {
                 resumeAnimation();
             }
         }, 3000);
-    }
 }
 
-export function updateCurrentPlayerPos(lastPos, lastRot, avatar, socket)
+function restartPlayer(player) 
 {
-    if (!avatar.position.equals(lastPos) || !avatar.rotation.equals(lastRot))
-    {
-        sendPosUpdate(socket, avatar.position, avatar.rotation);
-        lastPos.copy(avatar.position);
-        lastRot.copy(avatar.rotation);
-    }
+    player.avatar.position.set((new THREE.Vector3(Math.random() - 0.5) * 60, 0, (Math.random() - 0.5) * 60), 0.1);
+    player.hp = player.maxHP;
 }
 
-function restartPlayer(avatar) {
-    avatar.position.set((new THREE.Vector3(Math.random() - 0.5) * 60, 0, (Math.random() - 0.5) * 60), 0.1);
-}
-
-function showBurnedScreen() {
+function showBurnedScreen() 
+{
     const burnedScreen = document.getElementById('burned-screen');
     burnedScreen.style.display = 'block';
 

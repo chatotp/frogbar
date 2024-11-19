@@ -63,6 +63,28 @@
             border-radius:10px; 
             z-index:1000;
         }
+
+        #hp-bar-container {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            width: 200px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.1); /* light white background with transparency */
+            border-radius: 15px;
+            backdrop-filter: blur(10px); /* glass effect with blur */
+            border: 2px solid rgba(255, 255, 255, 0.3); /* subtle border for glass effect */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* light shadow for depth */
+        }
+
+        #current-player-hp-bar {
+            width: 100%;
+            height: 100%;
+            background-color: lightgreen; /* we are going to change this color dynamically based on HP */
+            border-radius: 15px;
+            transition: width 0.3s ease; /* smooth width transition */
+        }
     </style>
 
     <script src="https://cdn.socket.io/4.8.0/socket.io.min.js" integrity="sha384-OoIbkvzsFFQAG88r+IqMAjyOtYDPGO0cqK5HF5Uosdy/zUEGySeAzytENMDynREd" crossorigin="anonymous"></script>
@@ -70,7 +92,11 @@
 <body>
     <div id="burned-screen">
         You got burned!
-    </div>    
+    </div>
+
+    <div id="hp-bar-container">
+        <div id="current-player-hp-bar"></div>
+    </div>
 
     <script type="module" src="./app.js"></script>
     <div id="chat-box">

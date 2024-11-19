@@ -15,7 +15,11 @@ export function listenForUpdates(socket, scene, avatar)
 
             const rot = playerData.rotation;
             newAvatar.rotation.set(rot._x, rot._y, rot._z);
-            playerAvatars[playerId] = newAvatar;
+            playerAvatars[playerId] = {
+                avatar: newAvatar,
+                hp: 0,
+                maxHP: 100
+            };
         });
     });
 
@@ -27,7 +31,7 @@ export function listenForUpdates(socket, scene, avatar)
 
                 if (playerAvatars[playerId]) {
                     updateTargetPos(playerId, pos, rot);
-                    const newAvatar = playerAvatars[playerId];
+                    const newAvatar = playerAvatars[playerId].avatar;
                     newAvatar.position.set(pos.x, pos.y, pos.z);
                     newAvatar.rotation.set(rot._x, rot._y, rot._z);
                 }
@@ -39,7 +43,11 @@ export function listenForUpdates(socket, scene, avatar)
                     
                     newAvatar.position.set(pos.x, pos.y, pos.z);
                     newAvatar.rotation.set(rot._x, rot._y, rot._z);
-                    playerAvatars[playerId] = newAvatar;
+                    playerAvatars[playerId] = {
+                        avatar: newAvatar,
+                        hp: 0,
+                        maxHP: 100
+                    };
                 }
             }
         });
