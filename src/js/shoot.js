@@ -2,13 +2,23 @@ import * as THREE from 'three';
 import { updatePlayerHealth } from './playerUtils';
 import { playerAvatars } from './state';
 
-export function handleShooting(playerAvatar, scene, socket, userColor) {
+export function handleShooting(playerAvatar, scene, socket, userColor, pos = false, rot = false) {
     const bulletGeometry = new THREE.SphereGeometry(0.1, 8, 8);
     const bulletMaterial = new THREE.MeshBasicMaterial({ color: userColor });
     const bullet = new THREE.Mesh(bulletGeometry, bulletMaterial);
     
     // Set initial bullet position to player's position
-    bullet.position.copy(playerAvatar.position);
+    if (!pos || !rot)
+    {
+        bullet.position.copy(playerAvatar.position);
+        socket.emit('emitBullet', bullet.position, bullet.rotation, userColor);
+    }
+    else
+    {
+        bullet.position.copy(pos);
+        bullet.rotation.copy(rot);
+    }
+
     scene.add(bullet);
 
     // Calculate bullet direction based on player's orientation
@@ -25,8 +35,8 @@ export function handleShooting(playerAvatar, scene, socket, userColor) {
 
             if (!hit && bullet.position.distanceTo(target.position) < 0.5) { // collision threshold
                 hit = true; // Mark as hit to prevent multiple triggers
-                updatePlayerHealth(scene, playerAvatars[playerId], 5);
-                socket.emit('playerHit', playerId, 5);
+                updatePlayerHealth(scene, playerAvatars[playerId], 10);
+                socket.emit('playerHit', playerId, 10);
                 scene.remove(bullet);
             }
         });
