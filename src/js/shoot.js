@@ -33,11 +33,14 @@ export function handleShooting(playerAvatar, scene, socket, userColor, pos = fal
         Object.keys(playerAvatars).forEach(playerId => {
             const target = playerAvatars[playerId].avatar;
 
-            if (!hit && bullet.position.distanceTo(target.position) < 0.5) { // collision threshold
-                hit = true; // Mark as hit to prevent multiple triggers
-                updatePlayerHealth(scene, playerAvatars[playerId], 10);
-                socket.emit('playerHit', playerId, 10);
-                scene.remove(bullet);
+            if (playerAvatar !== target)
+            {
+                if (!hit && bullet.position.distanceTo(target.position) < 0.5) { // collision threshold
+                    hit = true; // Mark as hit to prevent multiple triggers
+                    updatePlayerHealth(scene, playerAvatars[playerId], 10);
+                    socket.emit('playerHit', playerId, 10);
+                    scene.remove(bullet);
+                }
             }
         });
     

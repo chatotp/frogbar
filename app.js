@@ -11,7 +11,7 @@ import * as THREE from 'three';
 import WebGL from 'three/addons/capabilities/WebGL.js';
 
 // TODO: Change this in prod!
-const socket = io("https://localhost:3000");
+const socket = io("http://localhost:3000");
 
 if (WebGL.isWebGL2Available()) 
 {
@@ -65,7 +65,7 @@ function initSpace()
 
         coordsDisplay.update(avatar.position, avatar.rotation);
         utils.checkSunCollision(scene, currentPlayer, sun.position, true);
-        playerUtils.updateCurrentPlayerPos(lastPos, lastRot, avatar, socket);
+        playerUtils.updateCurrentPlayerPos(lastPos, lastRot, avatar, socket, currentPlayer);
 
         Object.keys(playerAvatars).forEach(playerId => {
             if (targetPos[playerId])

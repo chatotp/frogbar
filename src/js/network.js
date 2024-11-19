@@ -73,7 +73,7 @@ export function listenForUpdates(socket, scene, avatar, currentPlayer)
     });
 }
 
-export function sendPosUpdate(socket, position, rotation)
+export function sendPosUpdate(socket, position, rotation, currentPlayer)
 {
-    socket.emit('updatePos', { position: position, rotation: rotation } );
+    socket.emit('updatePos', { position: position, rotation: rotation, hp: currentPlayer.hp, maxHP: currentPlayer.maxHP } );
 }

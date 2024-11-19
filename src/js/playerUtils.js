@@ -1,11 +1,11 @@
 import { sendPosUpdate } from "./network";
 import { showDeathScreen } from "./utils";
 
-export function updateCurrentPlayerPos(lastPos, lastRot, avatar, socket)
+export function updateCurrentPlayerPos(lastPos, lastRot, avatar, socket, currentPlayer)
 {
     if (!avatar.position.equals(lastPos) || !avatar.rotation.equals(lastRot))
     {
-        sendPosUpdate(socket, avatar.position, avatar.rotation);
+        sendPosUpdate(socket, avatar.position, avatar.rotation, currentPlayer);
         lastPos.copy(avatar.position);
         lastRot.copy(avatar.rotation);
     }
