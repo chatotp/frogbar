@@ -10,8 +10,7 @@ import * as playerUtils from './src/js/playerUtils'
 import * as THREE from 'three';
 import WebGL from 'three/addons/capabilities/WebGL.js';
 
-// TODO: Change this in prod!
-const socket = io("http://localhost:3000");
+const socket = io("https://frogbar-server.vercel.app/");
 
 if (WebGL.isWebGL2Available()) 
 {
