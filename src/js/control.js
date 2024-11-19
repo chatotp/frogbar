@@ -1,4 +1,38 @@
 import * as THREE from 'three';
+import { handleShooting } from './shoot';
+
+export function addMouseControls(avatar, scene, socket, userColor) {
+    let shooting = false; // Track whether the mouse is being held down
+    let shootingInterval; // Store the interval ID for continuous shooting
+
+    // Start shooting on pointerdown
+    document.addEventListener('pointerdown', () => {
+        if (document.activeElement.id === "chat-input") return; // prevent shooting while typing in chat
+
+        shooting = true;
+
+        // trigger shooting immediately and then repeatedly at intervals
+        handleShooting(avatar, scene, socket, userColor);
+        shootingInterval = setInterval(() => {
+            if (shooting) {
+                handleShooting(avatar, scene, socket, userColor);
+            }
+        }, 100);
+    });
+
+    // Stop shooting on pointerup
+    document.addEventListener('pointerup', () => {
+        shooting = false;
+        clearInterval(shootingInterval);
+    });
+
+    // stop shooting if the mouse leaves the window
+    document.addEventListener('pointerleave', () => {
+        shooting = false;
+        clearInterval(shootingInterval);
+    });
+}
+
 
 export function addKeyboardControls(avatar) 
 {

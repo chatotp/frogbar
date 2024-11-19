@@ -21,6 +21,11 @@ export function initChat(socket)
         userNameSpan.textContent = `${data.user}: `
 
         const msgSpan = document.createElement("span");
+        
+        if (data.user === "Narrator" || data.user === "System")
+        {
+            msgSpan.style.color = data.color || "white";
+        }
         msgSpan.textContent = `${data.msg}`;
         
         msg.appendChild(userNameSpan);

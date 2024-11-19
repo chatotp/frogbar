@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { pauseAnimation, resumeAnimation } from '../../app';
+import { updateCurrentPlayerHPBar } from './playerUtils';
 
 export function handleResize(renderer, camera)
 {
@@ -34,20 +35,20 @@ export function checkSunCollision(scene, player, sunPosition, localPlayer = fals
     }
 }
 
-export function showDeathScreen(scene, player, localPlayer)
+export function showDeathScreen(scene, player, localPlayer, died = false)
 {
     scene.remove(player.avatar);
 
         if (localPlayer)
         {
-            showBurnedScreen();
+            showBurnedScreen(died);
             pauseAnimation();
         }
 
         setTimeout(() => {
             if (localPlayer)
             {
-                restartPlayer(player);
+                restartPlayer(player, died);
             }
 
             scene.add(player.avatar);
@@ -61,14 +62,24 @@ export function showDeathScreen(scene, player, localPlayer)
 
 function restartPlayer(player) 
 {
-    player.avatar.position.set((new THREE.Vector3(Math.random() - 0.5) * 60, 0, (Math.random() - 0.5) * 60), 0.1);
+    player.avatar.position.set((Math.random() - 0.5) * 60, 0, (Math.random() - 0.5) * 60);
     player.hp = player.maxHP;
+    updateCurrentPlayerHPBar(100);
 }
 
-function showBurnedScreen() 
+function showBurnedScreen(died = false) 
 {
     const burnedScreen = document.getElementById('burned-screen');
     burnedScreen.style.display = 'block';
+
+    if (died)
+    {
+        burnedScreen.textContent = "You died!";
+    }
+    else
+    {
+        burnedScreen.textContent = "You got burned!";
+    }
 
     setTimeout(() => {
         burnedScreen.style.display = 'none';

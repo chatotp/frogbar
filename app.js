@@ -1,6 +1,6 @@
 import { createScene } from './src/js/scene';
 import { createAvatar, createAvatarText } from './src/js/avatar';
-import { addKeyboardControls } from './src/js/control';
+import { addKeyboardControls, addMouseControls } from './src/js/control';
 import { listenForUpdates } from './src/js/network';
 import { playerAvatars, targetPos } from './src/js/state';
 import { initChat } from './src/js/textChat';
@@ -34,15 +34,11 @@ function initSpace()
     avatar.add(camera);
     camera.position.set(0, 4, -5);
 
-    const keyControls = addKeyboardControls(avatar);
-
-    listenForUpdates(socket, scene, avatar);
-
     // Prompt for the username
     const username = prompt("Enter your username:", "Anonymous");
     const userHexColor = avatar.material.color.getHex();
     const userColor = `#${userHexColor.toString(16).padStart(6, '0')}`;
-    socket.emit('setUserData', { username, color: userColor} );
+    socket.emit('setUserData', { username, color: userColor, hp: 100, maxHP: 100 } );
     createAvatarText(scene, avatar, username, userColor, 1);
 
     const currentPlayer = {
@@ -50,7 +46,13 @@ function initSpace()
         hp: 100,
         maxHP: 100
     };
-    playerUtils.updatePlayerHealth(scene, currentPlayer, true);
+
+    playerUtils.updatePlayerHealth(scene, currentPlayer, 0, true);
+    const keyControls = addKeyboardControls(avatar);
+    addMouseControls(avatar, scene, socket, userColor);
+
+    // listen for socket events
+    listenForUpdates(socket, scene, avatar, currentPlayer);
 
     let lastPos = new THREE.Vector3();
     let lastRot = new THREE.Euler();
@@ -64,14 +66,6 @@ function initSpace()
         coordsDisplay.update(avatar.position, avatar.rotation);
         utils.checkSunCollision(scene, currentPlayer, sun.position, true);
         playerUtils.updateCurrentPlayerPos(lastPos, lastRot, avatar, socket);
-        if (currentPlayer.hp !== 0)
-        {
-            playerUtils.updatePlayerHealth(scene, currentPlayer, 0.01, true);   
-        }
-        else
-        {
-            playerUtils.updatePlayerHealth(scene, currentPlayer, -100, true);
-        }
 
         Object.keys(playerAvatars).forEach(playerId => {
             if (targetPos[playerId])

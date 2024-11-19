@@ -1,10 +1,11 @@
 import { createAvatar, createAvatarText } from "./avatar";
+import { updatePlayerHealth } from "./playerUtils";
 import { playerAvatars, updateTargetPos, removePlayer } from "./state";
 
-export function listenForUpdates(socket, scene, avatar)
+export function listenForUpdates(socket, scene, avatar, currentPlayer)
 {
     socket.on('init', (players) => {
-        socket.emit('updatePos', { position: avatar.position, rotation: avatar.rotation } );
+        socket.emit('updatePos', { position: avatar.position, rotation: avatar.rotation, hp: currentPlayer.hp, maxHP: currentPlayer.maxHP } );
         Object.keys(players).forEach(playerId => {
             const playerData = players[playerId];
             const newAvatar = createAvatar(playerData.color);
@@ -17,8 +18,8 @@ export function listenForUpdates(socket, scene, avatar)
             newAvatar.rotation.set(rot._x, rot._y, rot._z);
             playerAvatars[playerId] = {
                 avatar: newAvatar,
-                hp: 0,
-                maxHP: 100
+                hp: playerData.hp,
+                maxHP: playerData.maxHP
             };
         });
     });
@@ -34,6 +35,8 @@ export function listenForUpdates(socket, scene, avatar)
                     const newAvatar = playerAvatars[playerId].avatar;
                     newAvatar.position.set(pos.x, pos.y, pos.z);
                     newAvatar.rotation.set(rot._x, rot._y, rot._z);
+                    playerAvatars[playerId].hp = players[playerId].hp;
+                    playerAvatars[playerId].maxHP = players[playerId].maxHP;
                 }
                 else
                 {
@@ -45,8 +48,8 @@ export function listenForUpdates(socket, scene, avatar)
                     newAvatar.rotation.set(rot._x, rot._y, rot._z);
                     playerAvatars[playerId] = {
                         avatar: newAvatar,
-                        hp: 0,
-                        maxHP: 100
+                        hp: playerData.hp,
+                        maxHP: playerData.maxHP
                     };
                 }
             }
@@ -55,6 +58,13 @@ export function listenForUpdates(socket, scene, avatar)
     
     socket.on('disconnectPlayer', (playerId) => {
         removePlayer(playerId, scene);
+    });
+
+    socket.on('updateHealth', (playerId, damage) => {
+        if (playerId === socket.id)
+        {
+            updatePlayerHealth(scene, currentPlayer, damage, true);
+        }
     });
 }
 

@@ -17,14 +17,17 @@ export function updatePlayerHealth(scene, player, damage, localPlayer = false) {
 
     if (hpPercentage === 0)
     {
-        showDeathScreen(scene, player, localPlayer);
+        showDeathScreen(scene, player, localPlayer, true);
     }
 
-    updateCurrentPlayerHPBar(hpPercentage);
+    if (localPlayer)
+    {
+        updateCurrentPlayerHPBar(hpPercentage);
+    }
 }
 
 
-function updateCurrentPlayerHPBar(percentage) {
+export function updateCurrentPlayerHPBar(percentage) {
     const hpBar = document.getElementById('current-player-hp-bar');
     hpBar.style.width = `${percentage}%`;
     
