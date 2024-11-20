@@ -2,7 +2,7 @@ import { createScene } from './src/js/scene';
 import { createAvatar, createAvatarText } from './src/js/avatar';
 import { addKeyboardControls, addMouseControls } from './src/js/control';
 import { listenForUpdates } from './src/js/network';
-import { playerAvatars, targetPos } from './src/js/state';
+import { playerAvatars, targetPos, asteroidState } from './src/js/state';
 import { initChat } from './src/js/textChat';
 
 import * as utils from './src/js/utils';
@@ -10,7 +10,7 @@ import * as playerUtils from './src/js/playerUtils'
 import * as THREE from 'three';
 import WebGL from 'three/addons/capabilities/WebGL.js';
 
-const socket = io("https://frogbar-server.onrender.com");
+const socket = io("http://localhost:3000");
 
 if (WebGL.isWebGL2Available()) 
 {
@@ -27,7 +27,7 @@ let isAnimating = true;
 
 function initSpace()
 {
-    const { scene, camera, renderer, sun } = createScene();
+    const { scene, camera, renderer, sun, asteroids } = createScene();
     const coordsDisplay = utils.displayCoords();
     const avatar = createAvatar();
     avatar.add(camera);
@@ -70,6 +70,7 @@ function initSpace()
             if (targetPos[playerId])
             {
                 utils.checkSunCollision(scene, playerAvatars[playerId], sun.position);
+                utils.checkForAsteroidCollision(scene, playerAvatars[playerId], true);
                 const currentAvatar = playerAvatars[playerId].avatar;
                 const newPos = targetPos[playerId].position;
                 const newRot = targetPos[playerId].rotation;
@@ -81,7 +82,36 @@ function initSpace()
                 const targetRotation = new THREE.Euler(newRot._x, newRot._y, newRot._z);
                 currentAvatar.quaternion.slerp(new THREE.Quaternion().setFromEuler(targetRotation), 0.1);
             }
-        })
+        });
+
+        // Update asteroid positions and rotations
+        asteroidState.getMeshes()?.forEach((asteroid, index) => {
+            const asteroidData = asteroidState.getAsteroids()[index];
+            if (!asteroidData) return;
+
+            utils.checkForAsteroidCollision(scene, asteroid, currentPlayer);
+
+            asteroid.position.add(asteroid.velocity);
+
+            asteroid.rotation.x += asteroid.rotationSpeed.x;
+            asteroid.rotation.y += asteroid.rotationSpeed.y;
+            asteroid.rotation.z += asteroid.rotationSpeed.z;
+
+            // Reset position if the asteroid goes too far down
+            if (asteroid.position.y < -2000) {
+                asteroid.position.y = Math.random() * 500 + 250; // Reset back to a high position
+                asteroidState.updateAsteroid(index, {
+                    position_y: asteroid.position.y
+                });
+            }
+
+            // Sync updated position back to the asteroid state
+            asteroidState.updateAsteroid(index, {
+                position_x: asteroid.position.x,
+                position_y: asteroid.position.y,
+                position_z: asteroid.position.z
+            });
+        });
 
         renderer.render(scene, camera);
     }
@@ -89,7 +119,7 @@ function initSpace()
     renderer.setAnimationLoop(animateLoop);
     utils.handleResize(renderer, camera);
 
-    const colorPoints = new utils.createColorPoints(2000, 500); // 2000 points spread over 500 units in space
+    const colorPoints = new utils.createColorPoints(20000, 5000); // 2000 points spread over 500 units in space
     scene.add(colorPoints);
 }
 

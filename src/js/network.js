@@ -1,7 +1,8 @@
 import { createAvatar, createAvatarText } from "./avatar";
 import { updatePlayerHealth } from "./playerUtils";
 import { handleShooting } from "./shoot";
-import { playerAvatars, updateTargetPos, removePlayer } from "./state";
+import { playerAvatars, updateTargetPos, removePlayer, asteroidState } from "./state";
+import { setupAsteroids } from "./utils";
 
 export function listenForUpdates(socket, scene, avatar, currentPlayer)
 {
@@ -71,6 +72,13 @@ export function listenForUpdates(socket, scene, avatar, currentPlayer)
     socket.on('emitBulletPlayer', (playerId, position, rotation, userColor) => {
         handleShooting(playerAvatars[playerId].avatar, scene, socket, userColor, position, rotation);
     });
+
+    socket.on('initAsteroids', (asteroidsData) => {
+
+        asteroidState.setAsteroids(asteroidsData);
+        setupAsteroids(scene);
+    });
+    
 }
 
 export function sendPosUpdate(socket, position, rotation, currentPlayer)

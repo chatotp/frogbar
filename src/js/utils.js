@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { pauseAnimation, resumeAnimation } from '../../app';
 import { updateCurrentPlayerHPBar } from './playerUtils';
+import { asteroidState } from './state';
 
 export function handleResize(renderer, camera)
 {
@@ -120,4 +121,40 @@ export function createColorPoints(numPoints = 1000, spread = 1000) {
 
     const points = new THREE.Points(geometry, material);
     return points;
+}
+
+export function setupAsteroids(scene)
+{
+    const asteroidMeshes = [];
+
+    // Visualize asteroids in the scene
+    asteroidState.getAsteroids().forEach((asteroidData) => {
+        const { position_x, position_y, position_z, velocity_x, velocity_y, velocity_z, radius } = asteroidData;
+
+        // Create a new asteroid mesh using the data from the server
+        const asteroidGeometry = new THREE.DodecahedronGeometry(radius);
+        const asteroidMaterial = new THREE.MeshBasicMaterial({ color: 0x888888 });
+        const asteroid = new THREE.Mesh(asteroidGeometry, asteroidMaterial);
+
+        asteroid.position.set(position_x, position_y, position_z);
+        asteroid.rotationSpeed = new THREE.Vector3(0.02, 0.01, 0.02); // random values
+        asteroid.velocity = new THREE.Vector3(velocity_x, velocity_y, velocity_z);
+
+        asteroidMeshes.push(asteroid);
+        scene.add(asteroid);
+    });
+
+    asteroidState.setMeshes(asteroidMeshes);
+}
+
+export function checkForAsteroidCollision(scene, asteroid, currentPlayer)
+{
+    const playerPos = currentPlayer.avatar.position;
+    const distance = playerPos.distanceTo(asteroid.position);
+    const collisionThreshold = asteroid.geometry.parameters.radius + 2; // Add slight buffer;
+
+    if (distance < collisionThreshold)
+    {
+        showDeathScreen(scene, currentPlayer, true, true);
+    }
 }

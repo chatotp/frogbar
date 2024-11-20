@@ -39,3 +39,36 @@ export function removePlayer(playerId, scene)
         console.warn(`Attempted to remove positions of a non-existing player`);
     }
 }
+
+// asteroid states
+export const asteroidState = {
+    asteroids: [],
+
+    setAsteroids(asteroids) 
+    {
+        this.asteroids = asteroids;
+    },
+
+    updateAsteroid(index, newData) 
+    {
+        if (this.asteroids[index]) 
+        {
+            this.asteroids[index] = { ...this.asteroids[index], ...newData };
+        }
+    },
+
+    getAsteroids() 
+    {
+        return this.asteroids;
+    },
+
+    setMeshes(meshes)
+    {
+        this.meshes = meshes;
+    },
+
+    getMeshes()
+    {
+        return this.meshes;
+    }
+};
