@@ -32,6 +32,6 @@ export function initChat(socket)
         msg.appendChild(msgSpan);
 
         chatMsgs.appendChild(msg);
-        chatMsgs.scrollTop = chatMsgs.scrollHeight; // scroll to bottom
+        chatMsgs.scrollTop = chatMsgs.scrollHeight; // autoscroll to bottom
     })
 }
